@@ -22,6 +22,7 @@ int load_dds_from_file(char* filepath, DDS_HEADER** ddsfile) {
 			err = fill_dds_info(p_file, ddsfile);
 		} else {
 			err = -2;
+			printf("ERROR::dds_loader -> file found but file is empty | ERRORCODE: %#08X", err);
 		}
 		fclose(p_file);
 	}
