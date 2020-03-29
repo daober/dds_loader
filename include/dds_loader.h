@@ -3,7 +3,7 @@
 
 #include <stdio.h>
 
-struct DDS_PIXELFORMAT {
+typedef struct {
 	unsigned int			dwSize;
 	unsigned int			dwFlags;
 	unsigned int			dwFourCC;
@@ -12,7 +12,7 @@ struct DDS_PIXELFORMAT {
 	unsigned int			dwGBitMask;
 	unsigned int			dwBBitMask;
 	unsigned int			dwABitMask;
-};
+} DDS_PIXELFORMAT;
 
 
 typedef struct {
@@ -33,8 +33,8 @@ typedef struct {
 } DDS_HEADER;
 
 
-int load_dds_from_file(char* filepath, DDS_HEADER** ddsfile);
+int load_dds_from_file(char* filepath, DDS_HEADER** ddsfile, const bool flip = false);
 
-int fill_dds_info(FILE* p_file, DDS_HEADER** ddsfile);
+int fill_dds_info(FILE* p_file, DDS_HEADER** ddsfile, const int size, const bool flip = false);
 
 #endif
