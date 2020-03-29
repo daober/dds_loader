@@ -3,6 +3,8 @@ cmake_minimum_required(VERSION 3.1)
 project(dds_loader)
 
 set(CMAKE_CONFIGURATION_TYPES "Debug" CACHE STRING "" FORCE)
+set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /MT")
+set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /MTd")
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/cmake/CMakeLists.txt.in
         googletest-download/CMakeLists.txt)
@@ -27,4 +29,4 @@ include_directories(${PROJECT_SOURCE_DIR}/include)
 
 file(GLOB sources "${PROJECT_SOURCE_DIR}/src/*.cpp")
 
-add_executable(${PROJECT_NAME} ${sources} ${HEADERS} )
+add_library(${PROJECT_NAME} ${sources} ${HEADERS} )

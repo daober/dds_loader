@@ -3,8 +3,6 @@
 
 
 
-
-
 int addi(int, int);
 
 #endif
