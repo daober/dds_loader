@@ -1,6 +1,6 @@
 #include "gtest/gtest.h"
 
-#include "testfunction.h"
+#include "dds_loader.h"
 
 int dubi(int a, int b) {
 	return a + b;

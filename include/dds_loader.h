@@ -1,5 +1,5 @@
-#ifndef _WIDGET_H_
-#define _WIDGET_H_
+#ifndef _DDS_LOADER_H_
+#define _DDS_LOADER_H_
 
 
 
