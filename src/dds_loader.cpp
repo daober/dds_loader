@@ -2,6 +2,25 @@
 #include <stdlib.h>
 #include <assert.h>
 #include <string.h>
+#include <stdint.h>
+
+// dwCaps1 flags
+#define DDSF_COMPLEX		0x00000008
+#define DDSF_TEXTURE		0x00001000
+#define DDSF_MIPMAP			0x00400000
+
+// dwCaps2 flags
+//--- missing ---
+
+// pixel format flags
+#define DDSF_ALPHAPIXELS	0x00000001
+#define DDSF_FOURCC			0x00000004
+#define DDSF_RGB			0x00000040
+#define DDSF_RGBA			0x00000041
+
+
+
+
 
 int load_dds_from_file(char* filepath, DDS_HEADER** ddsfile, const bool flip) {
 	//err = -1 -> file not found
@@ -51,6 +70,13 @@ int fill_dds_info(FILE* p_file, DDS_HEADER** ddsfile, const int size, const bool
 	//read and fill dds header
 	DDS_HEADER* ddsh = (DDS_HEADER*)malloc(sizeof(DDS_HEADER));
 	memcpy(ddsh, buffer, sizeof(DDS_HEADER));
+
+	//caps 0x1
+	//width 0x2
+	//height 0x4
+	if (ddsh->dwFlags & 0x2) {
+		printf("valid width");
+	}
 
 
 	//size_t fread(void* ptr, size_t size_of_elements, size_t number_of_elements, FILE * a_file);
