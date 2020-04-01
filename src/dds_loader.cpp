@@ -43,9 +43,11 @@
 //#define FOURCC_DXT3				0x33545844 //(MAKEFOURCC('D','X','T','3'))
 //#define FOURCC_DXT5				0x35545844 //(MAKEFOURCC('D','X','T','5'))
 
+enum { TYPE_TEXTURE_NONE = -1, TYPE_TEXTURE_FLAT, TYPE_TEXTURE_3D, TYPE_TEXTURE_CUBEMAP };
 
 
-int load_dds_from_file(char* filepath, DDS_HEADER** ddsfile, const bool flip) {
+
+int load_dds_from_file(char* filepath, const bool flip) {
 	//err = -1 -> file not found
 	//err = -2 -> size of file is 0
 	int err = 0x0000;
@@ -65,7 +67,7 @@ int load_dds_from_file(char* filepath, DDS_HEADER** ddsfile, const bool flip) {
 		rewind(p_file);
 		if (sz > 0) {
 			//actual loading begins here
-			err = fill_dds_info(p_file, ddsfile, sz, flip);
+			err = fill_dds_info(p_file, sz, flip);
 		} else {
 			err = -2;
 			printf("ERROR::dds_loader -> file found but file is empty | ERRORCODE: %#08X\n", err);
@@ -76,7 +78,7 @@ int load_dds_from_file(char* filepath, DDS_HEADER** ddsfile, const bool flip) {
 }
 
 
-int fill_dds_info(FILE* p_file, DDS_HEADER** ddsfile, const int size, const bool flip) {
+int fill_dds_info(FILE* p_file, const int size, const bool flip) {
 
 	int err = 0;
 	char* buffer = (char*)malloc(sizeof(char)*size);
@@ -97,9 +99,21 @@ int fill_dds_info(FILE* p_file, DDS_HEADER** ddsfile, const int size, const bool
 	//caps 0x1
 	//width 0x2
 	//height 0x4
-	if (ddsh->dwFlags & 0x2) {
-		printf("valid width");
+	int type = 0;
+
+	//default format
+	type = TYPE_TEXTURE_FLAT;
+
+	if (ddsh->dwCaps2 & DDSF_CUBEMAP) {
+		type = TYPE_TEXTURE_CUBEMAP;
 	}
+	else if ((ddsh->dwCaps2 & DDSF_VOLUME) && (ddsh->dwDepth > 0)) {
+		type = TYPE_TEXTURE_3D;
+	}
+	else {
+		type = TYPE_TEXTURE_NONE;
+	}
+	// figure out what image format it is
 
 
 	//size_t fread(void* ptr, size_t size_of_elements, size_t number_of_elements, FILE * a_file);

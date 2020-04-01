@@ -33,8 +33,8 @@ typedef struct {
 } DDS_HEADER;
 
 
-int load_dds_from_file(char* filepath, DDS_HEADER** ddsfile, const bool flip = false);
+int load_dds_from_file(char* filepath, const bool flip = false);
 
-int fill_dds_info(FILE* p_file, DDS_HEADER** ddsfile, const int size, const bool flip = false);
+int fill_dds_info(FILE* p_file, const int size, const bool flip = false);
 
 #endif
