@@ -80,7 +80,7 @@ int load_dds_from_file(char* filepath, DDS_TEXTURE** texture_in, const bool flip
 
 int fill_dds_info(FILE* p_file, DDS_TEXTURE** texture_in, const int size, const bool flip) {
 
-	int err = 0;
+	int err = -1;
 	char* buffer = (char*)malloc(sizeof(char)*size);
 	fread(buffer, size, 1, p_file);
 	
@@ -95,7 +95,8 @@ int fill_dds_info(FILE* p_file, DDS_TEXTURE** texture_in, const int size, const 
 	//read and fill dds header
 	DDS_HEADER* ddsh = (DDS_HEADER*)malloc(sizeof(DDS_HEADER));
 
-	memcpy(ddsh, buffer, sizeof(DDS_HEADER));
+	//memcpy + shift to ignore the magic "DDS " identifier
+	memcpy(ddsh, buffer + 4, sizeof(DDS_HEADER));
 
 	//assert is thrown because because offset isn't right
 	assert(ddsh->dwSize == 124);
@@ -127,18 +128,18 @@ int fill_dds_info(FILE* p_file, DDS_TEXTURE** texture_in, const int size, const 
 	unsigned int width, height, depth;
 	width = ddsh->dwWidth;
 	height = ddsh->dwHeight;
-	depth = ddsh->dwDepth;
+	depth = ddsh->dwDepth == 0 ? 1: ddsh->dwDepth;
 
 	unsigned int pixel_size = width * height * depth;
 
 	assert(pixel_size != 0);
 	
-	//unsigned char* pixels = (unsigned char*)malloc(sizeof( unsigned char ) * pixel_size);
+	unsigned char* pixels = (unsigned char*)malloc(sizeof( unsigned char ) * pixel_size);
 
 	//copy pixels buffer to DDS_TEXTURE
-	//memcpy(pixels, p_file + sizeof(DDS_HEADER), sizeof(pixel_size));
+	memcpy(pixels, buffer + sizeof(DDS_HEADER) + 4, sizeof(pixel_size));
 
-	//delete[] pixels;
+	delete[] pixels;
 
 	//size_t fread(void* ptr, size_t size_of_elements, size_t number_of_elements, FILE * a_file);
 	free(buffer);
