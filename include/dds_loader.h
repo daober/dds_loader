@@ -16,25 +16,36 @@ typedef struct {
 
 
 typedef struct {
-	unsigned int            dwSize;
-	unsigned int            dwFlags;
-	unsigned int            dwHeight;
-	unsigned int            dwWidth;
-	unsigned int            dwPitchOrLinearSize;
-	unsigned int            dwDepth;
-	unsigned int            dwMipMapCount;
-	unsigned int            dwReserved1[11];
-	DDS_PIXELFORMAT			ddspf;
-	unsigned int            dwCaps;
-	unsigned int            dwCaps2;
-	unsigned int            dwCaps3;
-	unsigned int            dwCaps4;
-	unsigned int            dwReserved2;
+	unsigned int           dwSize;
+	unsigned int           dwFlags;
+	unsigned int           dwHeight;
+	unsigned int           dwWidth;
+	unsigned int           dwPitchOrLinearSize;
+	unsigned int           dwDepth;
+	unsigned int           dwMipMapCount;
+	unsigned int           dwReserved1[11];
+	DDS_PIXELFORMAT		   ddspf;
+	unsigned int           dwCaps;
+	unsigned int           dwCaps2;
+	unsigned int           dwCaps3;
+	unsigned int           dwCaps4;
+	unsigned int           dwReserved2;
 } DDS_HEADER;
 
 
-int load_dds_from_file(char* filepath, const bool flip = false);
+typedef struct {
+	unsigned int width;
+	unsigned int height;
+	unsigned int depth;
+	unsigned int sz;
+	unsigned int channels;
 
-int fill_dds_info(FILE* p_file, const int size, const bool flip = false);
+	unsigned char* pixels;
+} DDS_TEXTURE;
+
+
+int load_dds_from_file(char* filepath, DDS_TEXTURE** texture_in, const bool flip = false);
+
+int fill_dds_info(FILE* p_file, DDS_TEXTURE** texture_in, const int size, const bool flip = false);
 
 #endif

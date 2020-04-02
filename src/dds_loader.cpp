@@ -47,7 +47,7 @@ enum { TYPE_TEXTURE_NONE = -1, TYPE_TEXTURE_FLAT, TYPE_TEXTURE_3D, TYPE_TEXTURE_
 
 
 
-int load_dds_from_file(char* filepath, const bool flip) {
+int load_dds_from_file(char* filepath, DDS_TEXTURE** texture_in, const bool flip) {
 	//err = -1 -> file not found
 	//err = -2 -> size of file is 0
 	int err = 0x0000;
@@ -67,7 +67,7 @@ int load_dds_from_file(char* filepath, const bool flip) {
 		rewind(p_file);
 		if (sz > 0) {
 			//actual loading begins here
-			err = fill_dds_info(p_file, sz, flip);
+			err = fill_dds_info(p_file, texture_in, sz, flip);
 		} else {
 			err = -2;
 			printf("ERROR::dds_loader -> file found but file is empty | ERRORCODE: %#08X\n", err);
@@ -78,7 +78,7 @@ int load_dds_from_file(char* filepath, const bool flip) {
 }
 
 
-int fill_dds_info(FILE* p_file, const int size, const bool flip) {
+int fill_dds_info(FILE* p_file, DDS_TEXTURE** texture_in, const int size, const bool flip) {
 
 	int err = 0;
 	char* buffer = (char*)malloc(sizeof(char)*size);
@@ -100,6 +100,7 @@ int fill_dds_info(FILE* p_file, const int size, const bool flip) {
 	//width 0x2
 	//height 0x4
 	int type = 0;
+	int format = 0;
 
 	//default format
 	type = TYPE_TEXTURE_FLAT;
@@ -113,8 +114,27 @@ int fill_dds_info(FILE* p_file, const int size, const bool flip) {
 	else {
 		type = TYPE_TEXTURE_NONE;
 	}
-	// figure out what image format it is
 
+	// figure out what image format it is
+	if ((ddsh->ddspf.dwFlags & DDSF_FOURCC)) {
+
+	}
+
+	unsigned int width, height, depth;
+	width = ddsh->dwWidth;
+	height = ddsh->dwHeight;
+	depth = ddsh->dwDepth;
+
+	unsigned int pixel_size = width * height * depth;
+
+	assert(pixel_size != 0);
+	
+	unsigned char* pixels = (unsigned char*)malloc(sizeof( unsigned char ) * pixel_size);
+
+	//copy pixels buffer to DDS_TEXTURE
+	memcpy(pixels, p_file + sizeof(DDS_HEADER), sizeof(pixel_size));
+
+	delete[] pixels;
 
 	//size_t fread(void* ptr, size_t size_of_elements, size_t number_of_elements, FILE * a_file);
 	free(buffer);
