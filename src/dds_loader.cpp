@@ -39,9 +39,21 @@
 #define DDSF_RGBA				0x00000041
 
 // compressed texture types
-//#define FOURCC_DXT1				0x31545844 //(MAKEFOURCC('D','X','T','1'))
-//#define FOURCC_DXT3				0x33545844 //(MAKEFOURCC('D','X','T','3'))
-//#define FOURCC_DXT5				0x35545844 //(MAKEFOURCC('D','X','T','5'))
+#define FOURCC_DXT1				0x31545844 //(MAKEFOURCC('D','X','T','1'))
+#define FOURCC_DXT3				0x33545844 //(MAKEFOURCC('D','X','T','3'))
+#define FOURCC_DXT5				0x35545844 //(MAKEFOURCC('D','X','T','5'))
+
+#define GL_BGR_EXT                                        0x80E0
+#define GL_COMPRESSED_RGB_S3TC_DXT1_EXT                   0x83F0
+#define GL_COMPRESSED_RGBA_S3TC_DXT1_EXT                  0x83F1
+#define GL_COMPRESSED_RGBA_S3TC_DXT3_EXT                  0x83F2
+#define GL_COMPRESSED_RGBA_S3TC_DXT5_EXT                  0x83F3
+
+#define GL_RGB                            0x1907
+#define GL_RGBA                           0x1908
+#define GL_LUMINANCE                      0x1909
+#define GL_BGR_EXT                        0x80E0
+#define GL_BGRA_EXT                       0x80E1
 
 enum { TYPE_TEXTURE_NONE = -1, TYPE_TEXTURE_FLAT, TYPE_TEXTURE_3D, TYPE_TEXTURE_CUBEMAP };
 
@@ -80,7 +92,7 @@ int load_dds_from_file(char* filepath, DDS_TEXTURE** texture_in, const bool flip
 
 int fill_dds_info(FILE* p_file, DDS_TEXTURE** texture_in, const int size, const bool flip) {
 
-	int err = -1;
+	int err = 0;
 	char* buffer = (char*)malloc(sizeof(char)*size);
 	fread(buffer, size, 1, p_file);
 	
@@ -90,6 +102,7 @@ int fill_dds_info(FILE* p_file, DDS_TEXTURE** texture_in, const int size, const 
 	if (strncmp(buffer, "DDS ", 4) != 0) {
 		err = -3;
 		printf("ERROR::dds_loader -> no valid dds file given | ERRORCODE: %#08X\n", err);
+		return err;
 	}
 
 	//read and fill dds header
@@ -106,6 +119,7 @@ int fill_dds_info(FILE* p_file, DDS_TEXTURE** texture_in, const int size, const 
 	//height 0x4
 	int type = 0;
 	int format = 0;
+	int components = 0;
 
 	//default format
 	type = TYPE_TEXTURE_FLAT;
@@ -122,7 +136,56 @@ int fill_dds_info(FILE* p_file, DDS_TEXTURE** texture_in, const int size, const 
 
 	// figure out what image format it is
 	if ((ddsh->ddspf.dwFlags & DDSF_FOURCC)) {
+		switch (ddsh->ddspf.dwFourCC) {
+			case FOURCC_DXT1:
+				format = GL_COMPRESSED_RGBA_S3TC_DXT1_EXT;
+				components = 3;
+				break;
+			case FOURCC_DXT3:
+				format = GL_COMPRESSED_RGBA_S3TC_DXT3_EXT;
+				components = 4;
+				break;
+			case FOURCC_DXT5:
+				format = GL_COMPRESSED_RGBA_S3TC_DXT5_EXT;
+				components = 4;
+				break;
+			default:
+				err = -4;
+				printf("ERROR::dds_loader -> unknown texture format | ERRORCODE: %#08X\n", err);
+		}
+	} else if (ddsh->ddspf.dwRGBBitCount == 32 &&
+		ddsh->ddspf.dwRBitMask == 0x00FF0000 &&
+		ddsh->ddspf.dwGBitMask == 0x0000FF00 &&
+		ddsh->ddspf.dwBBitMask == 0x000000FF &&
+		ddsh->ddspf.dwABitMask == 0xFF000000) {
 
+		format = GL_BGRA_EXT;
+		components = 4;
+	} else if (ddsh->ddspf.dwRGBBitCount == 32 &&
+		ddsh->ddspf.dwRBitMask == 0x000000FF &&
+		ddsh->ddspf.dwGBitMask == 0x0000FF00 &&
+		ddsh->ddspf.dwBBitMask == 0x00FF0000 &&
+		ddsh->ddspf.dwABitMask == 0xFF000000) {
+		format = GL_RGBA;
+		components = 4;
+	} else if (ddsh->ddspf.dwRGBBitCount == 24 &&
+		ddsh->ddspf.dwRBitMask == 0x000000FF &&
+		ddsh->ddspf.dwGBitMask == 0x0000FF00 &&
+		ddsh->ddspf.dwBBitMask == 0x00FF0000) {
+		format = GL_RGB;
+		components = 3;
+	} else if (ddsh->ddspf.dwRGBBitCount == 24 &&
+		ddsh->ddspf.dwRBitMask == 0x00FF0000 &&
+		ddsh->ddspf.dwGBitMask == 0x0000FF00 &&
+		ddsh->ddspf.dwBBitMask == 0x000000FF) {
+		format = GL_BGR_EXT;
+		components = 3;
+	} else if (ddsh->ddspf.dwRGBBitCount == 8) {
+		format = GL_LUMINANCE;
+		components = 1;
+	} else {
+		err = -4;
+		printf("ERROR::dds_loader -> unknown texture format | ERRORCODE: %#08X\n", err);
 	}
 
 	unsigned int width, height, depth;
@@ -135,9 +198,16 @@ int fill_dds_info(FILE* p_file, DDS_TEXTURE** texture_in, const int size, const 
 	assert(pixel_size != 0);
 	
 	unsigned char* pixels = (unsigned char*)malloc(sizeof( unsigned char ) * pixel_size);
-
+	memset(pixels, 0, pixel_size);
 	//copy pixels buffer to DDS_TEXTURE
-	memcpy(pixels, buffer + sizeof(DDS_HEADER) + 4, sizeof(pixel_size));
+	memcpy(pixels, buffer + sizeof(DDS_HEADER) + 4, sizeof(unsigned char) * pixel_size);
+
+	(*texture_in)->channels = components;
+	(*texture_in)->depth = depth;
+	(*texture_in)->sz = pixel_size;
+	(*texture_in)->width = width;
+	(*texture_in)->height = height;
+	memcpy((*texture_in)->pixels, pixels, sizeof(unsigned char) * pixel_size);
 
 	delete[] pixels;
 
