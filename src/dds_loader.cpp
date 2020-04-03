@@ -193,21 +193,26 @@ int fill_dds_info(FILE* p_file, DDS_TEXTURE** texture_in, const int size, const 
 	height = ddsh->dwHeight;
 	depth = ddsh->dwDepth == 0 ? 1: ddsh->dwDepth;
 
-	unsigned int pixel_size = width * height * depth;
+	unsigned int picture_size = width * height * depth * 12;
 
-	assert(pixel_size != 0);
+	assert(picture_size != 0);
 	
-	unsigned char* pixels = (unsigned char*)malloc(sizeof( unsigned char ) * pixel_size);
-	memset(pixels, 0, pixel_size);
+	
+	//TODO: calculations are missing when texture is compressed
+	unsigned char* pixels = (unsigned char*)malloc(sizeof( unsigned char ) * picture_size);
+	memset(pixels, 0, picture_size);
 	//copy pixels buffer to DDS_TEXTURE
-	memcpy(pixels, buffer + sizeof(DDS_HEADER) + 4, sizeof(unsigned char) * pixel_size);
+
+
+	//here it fails
+	memcpy(pixels, buffer + 4 + sizeof(DDS_HEADER), sizeof(unsigned char*) * picture_size);
 
 	(*texture_in)->channels = components;
 	(*texture_in)->depth = depth;
-	(*texture_in)->sz = pixel_size;
+	(*texture_in)->sz = picture_size;
 	(*texture_in)->width = width;
 	(*texture_in)->height = height;
-	memcpy((*texture_in)->pixels, pixels, sizeof(unsigned char) * pixel_size);
+	memcpy((*texture_in)->pixels, pixels, sizeof(unsigned char) * picture_size);
 
 	delete[] pixels;
 
