@@ -1,0 +1,6 @@
+@PACKAGE_INIT@
+
+# Find required packages
+
+# Do not change below
+include(${CMAKE_CURRENT_LIST_DIR}/@PROJECT_NAME@Targets.cmake)

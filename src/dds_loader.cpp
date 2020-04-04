@@ -135,7 +135,7 @@ int fill_dds_info(FILE* p_file, DDS_TEXTURE** texture_in, const int size, const 
 		type = TYPE_TEXTURE_3D;
 	}
 	else {
-		type = TYPE_TEXTURE_NONE;
+		type = TYPE_TEXTURE_FLAT;
 	}
 
 	// figure out what image format it is

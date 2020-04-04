@@ -18,15 +18,35 @@ add_subdirectory(${CMAKE_BINARY_DIR}/googletest-src
 
 enable_testing()
 add_subdirectory(test)
-
+add_subdirectory(exports)
 
 ##
 ### Source definitions ###
 ##
 SET(HEADERS ${PROJECT_SOURCE_DIR}/include/dds_loader.h)
 
-include_directories(${PROJECT_SOURCE_DIR}/include)
+#include_directories(${PROJECT_SOURCE_DIR}/include)
 
 file(GLOB sources "${PROJECT_SOURCE_DIR}/src/*.cpp")
 
-add_library(${PROJECT_NAME} ${sources} ${HEADERS} )
+add_library(${PROJECT_NAME} STATIC ${sources} ${HEADERS})
+
+set(lib_dest "lib/")
+set(include_dest "include/")
+
+target_include_directories(${PROJECT_NAME} PUBLIC
+                        $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include> # for headers when building
+	                $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}> # for config_impl.hpp when building
+                        $<INSTALL_INTERFACE:${include_dest}> # for client in install mode
+                        $<INSTALL_INTERFACE:${lib_dest}> # for config_impl.hpp in install mode)
+)
+
+#set(export_config_file ${CMAKE_CURRENT_SOURCE_DIR}/exports)
+
+install(TARGETS ${PROJECT_NAME} 
+        EXPORT Targets
+        LIBRARY DESTINATION lib
+        ARCHIVE DESTINATION lib
+        RUNTIME DESTINATION bin
+        )
+
