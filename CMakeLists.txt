@@ -17,6 +17,7 @@ add_subdirectory(${CMAKE_BINARY_DIR}/googletest-src
         ${CMAKE_BINARY_DIR}/googletest-build)
 
 enable_testing()
+
 add_subdirectory(test)
 add_subdirectory(exports)
 
@@ -34,14 +35,16 @@ add_library(${PROJECT_NAME} STATIC ${sources} ${HEADERS})
 set(lib_dest "lib/")
 set(include_dest "include/")
 
-target_include_directories(${PROJECT_NAME} PUBLIC
-                        $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include> # for headers when building
-	                $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}> # for config_impl.hpp when building
-                        $<INSTALL_INTERFACE:${include_dest}> # for client in install mode
-                        $<INSTALL_INTERFACE:${lib_dest}> # for config_impl.hpp in install mode)
+target_include_directories(${PROJECT_NAME} PRIVATE
+                        src
+                        PUBLIC
+	                $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include> # for config_impl.hpp when building
+                        $<INSTALL_INTERFACE:include> # for client in install mode
 )
 
 #set(export_config_file ${CMAKE_CURRENT_SOURCE_DIR}/exports)
+install(DIRECTORY include DESTINATION .)
+
 
 install(TARGETS ${PROJECT_NAME} 
         EXPORT Targets
