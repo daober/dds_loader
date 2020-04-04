@@ -58,6 +58,10 @@
 enum { TYPE_TEXTURE_NONE = -1, TYPE_TEXTURE_FLAT, TYPE_TEXTURE_3D, TYPE_TEXTURE_CUBEMAP };
 
 
+int is_compressed_texture(int format) {
+	return ( format == GL_COMPRESSED_RGBA_S3TC_DXT1_EXT || (format == GL_COMPRESSED_RGBA_S3TC_DXT3_EXT) || (format == GL_COMPRESSED_RGBA_S3TC_DXT5_EXT) );
+}
+
 
 int load_dds_from_file(char* filepath, DDS_TEXTURE** texture_in, const bool flip) {
 	//err = -1 -> file not found
@@ -188,35 +192,36 @@ int fill_dds_info(FILE* p_file, DDS_TEXTURE** texture_in, const int size, const 
 		printf("ERROR::dds_loader -> unknown texture format | ERRORCODE: %#08X\n", err);
 	}
 
-	unsigned int width, height, depth;
+	unsigned int picture_size = 0;
+	unsigned int width, height, depth = 0;
 	width = ddsh->dwWidth;
 	height = ddsh->dwHeight;
-	depth = ddsh->dwDepth == 0 ? 1: ddsh->dwDepth;
-
-	unsigned int picture_size = width * height * depth * 12;
+	depth = ddsh->dwDepth == 0 ? 1 : ddsh->dwDepth;
+	if (is_compressed_texture(format)) {
+		picture_size = ((width + 3) / 4) * ((height + 3) / 4) * (format == GL_COMPRESSED_RGBA_S3TC_DXT1_EXT ? 8 : 16);
+	} else {
+		picture_size = width * height * components;
+	}
 
 	assert(picture_size != 0);
 	
-	
 	//TODO: calculations are missing when texture is compressed
 	unsigned char* pixels = (unsigned char*)malloc(sizeof( unsigned char ) * picture_size);
-	memset(pixels, 0, picture_size);
-	//copy pixels buffer to DDS_TEXTURE
+	memset(pixels, 0, sizeof(unsigned char) * picture_size);
 
-
-	//here it fails
-	memcpy(pixels, buffer + 4 + sizeof(DDS_HEADER), sizeof(unsigned char*) * picture_size);
+	memcpy(pixels, buffer + 4 + sizeof(DDS_HEADER), sizeof(unsigned char) * picture_size);
 
 	(*texture_in)->channels = components;
 	(*texture_in)->depth = depth;
 	(*texture_in)->sz = picture_size;
 	(*texture_in)->width = width;
 	(*texture_in)->height = height;
+	(*texture_in)->pixels = (unsigned char*)malloc(sizeof(unsigned char) * picture_size);
+	memset((*texture_in)->pixels, 0, sizeof(unsigned char) * picture_size);
 	memcpy((*texture_in)->pixels, pixels, sizeof(unsigned char) * picture_size);
 
-	delete[] pixels;
+	free(pixels);
 
-	//size_t fread(void* ptr, size_t size_of_elements, size_t number_of_elements, FILE * a_file);
 	free(buffer);
 	free(ddsh);
 

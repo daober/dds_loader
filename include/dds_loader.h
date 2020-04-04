@@ -48,4 +48,6 @@ int load_dds_from_file(char* filepath, DDS_TEXTURE** texture_in, const bool flip
 
 int fill_dds_info(FILE* p_file, DDS_TEXTURE** texture_in, const int size, const bool flip = false);
 
+int is_compressed_texture(int format);
+
 #endif
