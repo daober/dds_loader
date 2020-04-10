@@ -56,9 +56,8 @@
 
 
 /*======================================================================*/
-/*===== VULKAN DEFINES (Should also work with OPENGL APPLICATIONS) =====*/
-#define VK_FORMAT_BC1_RGBA_UNORM_BLOCK	GL_COMPRESSED_RGBA_S3TC_DXT1_EXT
-#define VK_FORMAT_BC1_RGB_UNORM_BLOCK	GL_COMPRESSED_RGB_S3TC_DXT1_EXT
+/*===== VULKAN DEFINES (should also work with OPENGL APPLICATIONS) =====*/
+
 
 /*======================================================================*/
 
@@ -68,7 +67,7 @@ enum { TYPE_TEXTURE_NONE = -1, TYPE_TEXTURE_FLAT, TYPE_TEXTURE_3D, TYPE_TEXTURE_
 
 
 int is_compressed_texture(int format) {
-	return ( format == GL_COMPRESSED_RGBA_S3TC_DXT1_EXT || (format == GL_COMPRESSED_RGBA_S3TC_DXT3_EXT) || (format == GL_COMPRESSED_RGBA_S3TC_DXT5_EXT) || format == VK_FORMAT_BC1_RGBA_UNORM_BLOCK);
+	return ( format == GL_COMPRESSED_RGBA_S3TC_DXT1_EXT || (format == GL_COMPRESSED_RGBA_S3TC_DXT3_EXT) || (format == GL_COMPRESSED_RGBA_S3TC_DXT5_EXT) );
 }
 
 int flip_texture(DDS_TEXTURE** texture_in)
@@ -132,9 +131,6 @@ int fill_dds_info(FILE* p_file, DDS_TEXTURE** texture_in, const int size, const 
 	//assert is thrown because because offset isn't right
 	assert(ddsh->dwSize == 124);
 
-	//caps 0x1
-	//width 0x2
-	//height 0x4
 	int type = 0;
 	int format = 0;
 	int channels = 0;
@@ -156,7 +152,7 @@ int fill_dds_info(FILE* p_file, DDS_TEXTURE** texture_in, const int size, const 
 	if ((ddsh->ddspf.dwFlags & DDSF_FOURCC)) {
 		switch (ddsh->ddspf.dwFourCC) {
 			case FOURCC_DXT1:
-				format = VK_FORMAT_BC1_RGBA_UNORM_BLOCK;
+				format = GL_COMPRESSED_RGBA_S3TC_DXT1_EXT;
 				channels = 3;
 				break;
 			case FOURCC_DXT3:
@@ -214,7 +210,7 @@ int fill_dds_info(FILE* p_file, DDS_TEXTURE** texture_in, const int size, const 
 	depth = ddsh->dwDepth == 0 ? 1 : ddsh->dwDepth;
 
 	if (is_compressed_texture(format)) {
-		picture_size = ((width + 3) / 4) * ((height + 3) / 4) * (format == VK_FORMAT_BC1_RGBA_UNORM_BLOCK ? 8 : 16);
+		picture_size = ((width + 3) / 4) * ((height + 3) / 4) * (format == GL_COMPRESSED_RGBA_S3TC_DXT1_EXT ? 8 : 16);
 	} else {
 		picture_size = width * height * channels;
 	}
@@ -244,25 +240,26 @@ int fill_dds_info(FILE* p_file, DDS_TEXTURE** texture_in, const int size, const 
 	memset((*texture_in)->pixels, 0, sizeof(unsigned char) * picture_size);
 	memcpy((*texture_in)->pixels, pixels, sizeof(unsigned char) * picture_size);
 
-	//allocate mipmap structure array
-	(*texture_in)->mipmaps = (MIPMAP_TEXTURE*)malloc(sizeof(MIPMAP_TEXTURE) * num_mipmap);
-
 	//initial shrink of texture size (for mipmaps)
 	unsigned int mip_w = width >> 1;
 	unsigned int mip_h = height >> 1;
 	unsigned int mip_d = depth >> 1 ? depth >> 1 : 1;
 	
 	unsigned int offset = 0;
+
 	//load all mipmaps
 	for (unsigned int i = 0; i < num_mipmap && (mip_w || mip_h); i++) {
 
 		unsigned int mip_picture_size = 0;
 		if (is_compressed_texture(format)) {
-			mip_picture_size = ((mip_w + 3) / 4) * ((mip_h + 3) / 4) * (format == VK_FORMAT_BC1_RGBA_UNORM_BLOCK ? 8 : 16);
+			mip_picture_size = ((mip_w + 3) / 4) * ((mip_h + 3) / 4) * (format == GL_COMPRESSED_RGBA_S3TC_DXT1_EXT ? 8 : 16);
 		}
 		else {
 			mip_picture_size = mip_w * mip_h * channels;
 		}
+
+		//allocate mipmap structure array
+		(*texture_in)->mipmaps = (MIPMAP_TEXTURE*)malloc(sizeof(MIPMAP_TEXTURE) );
 
 		//fill mipmap structure
 		(*texture_in)->mipmaps->channels = channels;
@@ -274,8 +271,8 @@ int fill_dds_info(FILE* p_file, DDS_TEXTURE** texture_in, const int size, const 
 
 		(*texture_in)->mipmaps->pixels = (unsigned char*)malloc(sizeof(unsigned char) * mip_picture_size);
 
-		/*memset((*texture_in)->mipmaps->pixels + offset, 0, sizeof(unsigned char) * mip_picture_size);
-		memcpy((*texture_in)->mipmaps->pixels + offset, pixels, sizeof(unsigned char) * mip_picture_size);*/
+		memset((*texture_in)->mipmaps->pixels, 0, sizeof(unsigned char) * mip_picture_size);
+		memcpy((*texture_in)->mipmaps->pixels, pixels, sizeof(unsigned char) * mip_picture_size);
 
 		//free(pixels)
 		//shrink again
@@ -287,7 +284,7 @@ int fill_dds_info(FILE* p_file, DDS_TEXTURE** texture_in, const int size, const 
 		//offset += mip_picture_size;
 
 		//TODO: need to calculate the exact size to next mipmap block
-		//(*texture_in)->mipmaps += sizeof(MIPMAP_TEXTURE);
+		(*texture_in)->mipmaps += sizeof(channels) + mip_picture_size + sizeof(mip_d) + sizeof(mip_w) + sizeof(mip_h) + sizeof(format);
 		
 	}
 
