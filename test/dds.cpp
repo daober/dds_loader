@@ -7,7 +7,7 @@
 
 TEST(TestFilePath, TestInvalidFilePath) {
 	DDS_TEXTURE* dds_texture = (DDS_TEXTURE*)malloc(sizeof(DDS_TEXTURE));
-	int result = load_dds_from_file("../../assets/invalid_path.dds", &dds_texture);
+	int result = load_dds_from_file("../assets/invalid_path.dds", &dds_texture);
 
 	EXPECT_EQ(result, -1);
 
@@ -16,7 +16,7 @@ TEST(TestFilePath, TestInvalidFilePath) {
 
 TEST(TestFilePath, TestSizeIsNull) {
 	DDS_TEXTURE* dds_texture = (DDS_TEXTURE*)malloc(sizeof(DDS_TEXTURE));
-	int result = load_dds_from_file("../../assets/zero_size.dds", &dds_texture);
+	int result = load_dds_from_file("../assets/zero_size.dds", &dds_texture);
 
 	EXPECT_EQ(result, -2);
 
@@ -25,7 +25,7 @@ TEST(TestFilePath, TestSizeIsNull) {
 
 TEST(TestLoading, FileWithDepth) {
 	DDS_TEXTURE* dds_texture = (DDS_TEXTURE*)malloc(sizeof(DDS_TEXTURE));
-	int result = load_dds_from_file("../../assets/MASTER_Room_Interior_BaseColor.dds", &dds_texture);
+	int result = load_dds_from_file("../assets/MASTER_Room_Interior_BaseColor.dds", &dds_texture);
 
 	EXPECT_EQ(result, 0);
 
@@ -34,7 +34,7 @@ TEST(TestLoading, FileWithDepth) {
 
 TEST(TestLoading, FileMatches) {
 	DDS_TEXTURE* dds_texture = (DDS_TEXTURE*)malloc(sizeof(DDS_TEXTURE));
-	int result = load_dds_from_file("../../assets/Shopsign_Bakery_BaseColor.dds", &dds_texture);
+	int result = load_dds_from_file("../assets/Shopsign_Bakery_BaseColor.dds", &dds_texture);
 
 	EXPECT_EQ(result, 0);
 

@@ -34,14 +34,31 @@ typedef struct {
 
 
 typedef struct {
-	unsigned int width;
-	unsigned int height;
-	unsigned int depth;
-	unsigned int sz;
-	unsigned int channels;
+	unsigned int			width;
+	unsigned int			height;
+	unsigned int			depth;
+	unsigned int			sz;
+	unsigned int			channels;
+	unsigned int			format;
+	//no mipmap count
+	unsigned char*			pixels;
+} MIPMAP_TEXTURE;
 
-	unsigned char* pixels;
+
+typedef struct {
+	unsigned int			width;
+	unsigned int			height;
+	unsigned int			depth;
+	unsigned int			sz;
+	unsigned int			channels;
+	unsigned int			format;
+	unsigned int			mipmap_count;
+
+	MIPMAP_TEXTURE*			mipmaps;
+
+	unsigned char*			pixels;
 } DDS_TEXTURE;
+
 
 
 int load_dds_from_file(char* filepath, DDS_TEXTURE** texture_in, const bool flip = false);
@@ -49,5 +66,7 @@ int load_dds_from_file(char* filepath, DDS_TEXTURE** texture_in, const bool flip
 int fill_dds_info(FILE* p_file, DDS_TEXTURE** texture_in, const int size, const bool flip = false);
 
 int is_compressed_texture(int format);
+
+int flip_texture(DDS_TEXTURE** texture_in);
 
 #endif
