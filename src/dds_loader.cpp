@@ -266,13 +266,26 @@ int fill_dds_info(FILE* p_file, DDS_TEXTURE** texture_in, const int size, const 
 		}
 
 		//fill mipmap structure
-		(*texture_in)->mipmaps->channels = channels;
-		(*texture_in)->mipmaps->sz = mip_picture_size;
-		(*texture_in)->mipmaps->depth = mip_d;
-		(*texture_in)->mipmaps->width = mip_w;
-		(*texture_in)->mipmaps->height = mip_h;
-		(*texture_in)->mipmaps->format = format;
-		(*texture_in)->mipmaps->mipmap_count = i;
+		memset(&(*texture_in)->mipmaps->channels, 0, sizeof(int));
+		memcpy(&(*texture_in)->mipmaps->channels, &channels, sizeof(int));
+
+		memset(&(*texture_in)->mipmaps->sz, 0, sizeof(unsigned int));
+		memcpy(&(*texture_in)->mipmaps->sz, &mip_picture_size, sizeof(unsigned int));
+
+		memset(&(*texture_in)->mipmaps->depth, 0, sizeof(unsigned int));
+		memcpy(&(*texture_in)->mipmaps->depth, &mip_d, sizeof(unsigned int));
+
+		memset(&(*texture_in)->mipmaps->width, 0, sizeof(unsigned int));
+		memcpy(&(*texture_in)->mipmaps->width, &mip_w, sizeof(unsigned int));
+
+		memset(&(*texture_in)->mipmaps->height, 0, sizeof(unsigned int));
+		memcpy(&(*texture_in)->mipmaps->height, &mip_h, sizeof(unsigned int));
+
+		memset(&(*texture_in)->mipmaps->format, 0, sizeof(unsigned int));
+		memcpy(&(*texture_in)->mipmaps->format, &format, sizeof(unsigned int));
+
+		memset(&(*texture_in)->mipmaps->mipmap_count, 0, sizeof(unsigned int));
+		memcpy(&(*texture_in)->mipmaps->mipmap_count, &i, sizeof(unsigned int));
 
 		(*texture_in)->mipmaps->pixels = (unsigned char*)malloc(sizeof(unsigned char) * mip_picture_size);
 
@@ -284,22 +297,6 @@ int fill_dds_info(FILE* p_file, DDS_TEXTURE** texture_in, const int size, const 
 		(*texture_in)->mipmaps->pixels += mip_picture_size;
 		(*texture_in)->mipmaps += sizeof(DDS_TEXTURE) + sizeof(channels) + sizeof(unsigned char) + sizeof(mip_d) + sizeof(mip_w) + sizeof(mip_h) + sizeof(format) + sizeof(i);
 
-
-		/*
-		
-			unsigned int			width;
-	unsigned int			height;
-	unsigned int			depth;
-	unsigned int			sz;
-	unsigned int			channels;
-	unsigned int			format;
-	unsigned int			mipmap_count;		//mipmap_count is index in mipmaps
-
-	struct DDS_TEXTURE*		mipmaps;
-
-	unsigned char*			pixels;*/
-
-
 		//shrink again
 		mip_w = mip_w >> 1;
 		mip_h = mip_h >> 1;
@@ -307,7 +304,6 @@ int fill_dds_info(FILE* p_file, DDS_TEXTURE** texture_in, const int size, const 
 
 		//fill the next inner mipmap structure
 		//offset += mip_picture_size;
-
 
 		offset += mip_picture_size;
 	}
