@@ -259,7 +259,7 @@ int fill_dds_info(FILE* p_file, DDS_TEXTURE** texture_in, const int size, const 
 		}
 
 		//allocate mipmap structure array
-		(*texture_in)->mipmaps = (MIPMAP_TEXTURE*)malloc(sizeof(MIPMAP_TEXTURE) );
+		(*texture_in)->mipmaps = (DDS_TEXTURE*)malloc(sizeof(DDS_TEXTURE));
 
 		//fill mipmap structure
 		(*texture_in)->mipmaps->channels = channels;
@@ -268,13 +268,18 @@ int fill_dds_info(FILE* p_file, DDS_TEXTURE** texture_in, const int size, const 
 		(*texture_in)->mipmaps->width = mip_w;
 		(*texture_in)->mipmaps->height = mip_h;
 		(*texture_in)->mipmaps->format = format;
+		(*texture_in)->mipmaps->mipmap_count = i;
 
 		(*texture_in)->mipmaps->pixels = (unsigned char*)malloc(sizeof(unsigned char) * mip_picture_size);
 
 		memset((*texture_in)->mipmaps->pixels, 0, sizeof(unsigned char) * mip_picture_size);
 		memcpy((*texture_in)->mipmaps->pixels, pixels, sizeof(unsigned char) * mip_picture_size);
 
-		//free(pixels)
+
+		//TODO: need to calculate the exact size to next mipmap block
+		(*texture_in)->mipmaps->pixels += mip_picture_size;
+		(*texture_in)->mipmaps += sizeof(channels) + sizeof(unsigned char) + sizeof(mip_d) + sizeof(mip_w) + sizeof(mip_h) + sizeof(format);
+
 		//shrink again
 		mip_w = mip_w >> 1;
 		mip_h = mip_h >> 1;
@@ -283,9 +288,6 @@ int fill_dds_info(FILE* p_file, DDS_TEXTURE** texture_in, const int size, const 
 		//fill the next inner mipmap structure
 		//offset += mip_picture_size;
 
-		//TODO: need to calculate the exact size to next mipmap block
-		(*texture_in)->mipmaps->pixels += mip_picture_size;
-		(*texture_in)->mipmaps += sizeof(channels) + sizeof(unsigned char) + sizeof(mip_d) + sizeof(mip_w) + sizeof(mip_h) + sizeof(format);
 
 		offset += mip_picture_size;
 	}

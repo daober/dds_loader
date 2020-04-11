@@ -33,28 +33,16 @@ typedef struct {
 } DDS_HEADER;
 
 
-typedef struct {
+typedef struct DDS_TEXTURE {
 	unsigned int			width;
 	unsigned int			height;
 	unsigned int			depth;
 	unsigned int			sz;
 	unsigned int			channels;
 	unsigned int			format;
-	//no mipmap count
-	unsigned char*			pixels;
-} MIPMAP_TEXTURE;
+	unsigned int			mipmap_count;		//mipmap_count is index in mipmaps
 
-
-typedef struct {
-	unsigned int			width;
-	unsigned int			height;
-	unsigned int			depth;
-	unsigned int			sz;
-	unsigned int			channels;
-	unsigned int			format;
-	unsigned int			mipmap_count;
-
-	MIPMAP_TEXTURE*			mipmaps;
+	struct DDS_TEXTURE*		mipmaps;
 
 	unsigned char*			pixels;
 } DDS_TEXTURE;
