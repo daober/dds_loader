@@ -11,8 +11,9 @@ class dds_loaderConan(ConanFile):
     no_copy_source = True
     
     def build(self):
+
         cmake = CMake(self)
-        #cmake.definitions["CMAKE_POSITION_INDEPENDENT_CODE"] = "ON"
+        cmake.definitions["CMAKE_POSITION_INDEPENDENT_CODE"] = "ON"
         cmake.configure()
         cmake.build()
         cmake.install()
