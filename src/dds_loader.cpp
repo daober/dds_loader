@@ -265,6 +265,8 @@ int fill_dds_info(FILE* p_file, DDS_TEXTURE** texture_in, const int size, const 
 			return -5;
 		}
 
+		(*texture_in)->mipmaps->mipmaps = NULL;
+
 		//fill mipmap structure
 		memset(&(*texture_in)->mipmaps->channels, 0, sizeof(int));
 		memcpy(&(*texture_in)->mipmaps->channels, &channels, sizeof(int));
@@ -295,8 +297,24 @@ int fill_dds_info(FILE* p_file, DDS_TEXTURE** texture_in, const int size, const 
 
 		//TODO: need to calculate the exact size to next mipmap block
 		(*texture_in)->mipmaps->pixels += mip_picture_size;
-		(*texture_in)->mipmaps += sizeof(DDS_TEXTURE) + sizeof(channels) + sizeof(unsigned char) + sizeof(mip_d) + sizeof(mip_w) + sizeof(mip_h) + sizeof(format) + sizeof(i);
+		(*texture_in)->mipmaps += sizeof(DDS_TEXTURE) + sizeof(mip_picture_size) + sizeof(channels) + sizeof(unsigned char) + sizeof(mip_d) + sizeof(mip_w) + sizeof(mip_h) + sizeof(format) + sizeof(i);
 
+
+		/*
+		
+		typedef struct DDS_TEXTURE {
+	unsigned int			width;
+	unsigned int			height;
+	unsigned int			depth;
+	unsigned int			sz;
+	unsigned int			channels;
+	unsigned int			format;
+	unsigned int			mipmap_count;		//mipmap_count is index in mipmaps
+
+	struct DDS_TEXTURE*		mipmaps;
+
+	unsigned char*			pixels;
+} DDS_TEXTURE; */
 		//shrink again
 		mip_w = mip_w >> 1;
 		mip_h = mip_h >> 1;
