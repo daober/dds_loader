@@ -284,7 +284,8 @@ int fill_dds_info(FILE* p_file, DDS_TEXTURE** texture_in, const int size, const 
 		//offset += mip_picture_size;
 
 		//TODO: need to calculate the exact size to next mipmap block
-		(*texture_in)->mipmaps += sizeof(channels) + mip_picture_size + sizeof(mip_d) + sizeof(mip_w) + sizeof(mip_h) + sizeof(format);
+		(*texture_in)->mipmaps->pixels += mip_picture_size;
+		(*texture_in)->mipmaps += sizeof(channels) + sizeof(mip_picture_size) + sizeof(mip_d) + sizeof(mip_w) + sizeof(mip_h) + sizeof(format);
 		
 	}
 
