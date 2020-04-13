@@ -53,7 +53,22 @@ TEST(TestLoading, MainPixelsFilled) {
 		EXPECT_TRUE(dds_texture->pixels != nullptr);
 		EXPECT_TRUE(dds_texture->pixels != 0);
 	}
+	free(dds_texture);
+}
 
+TEST(TestLoading, MainStructureFilled) {
+	DDS_TEXTURE* dds_texture = (DDS_TEXTURE*)malloc(sizeof(DDS_TEXTURE));
+	int result = load_dds_from_file("../assets/Shopsign_Bakery_BaseColor.dds", &dds_texture);
+
+	if(dds_texture->pixels && dds_texture->sz){
+		EXPECT_GT(dds_texture->width, 0);
+		EXPECT_GT(dds_texture->height, 0);
+		EXPECT_GT(dds_texture->depth, 0);
+		EXPECT_GT(dds_texture->channels, 0);
+		EXPECT_GT(dds_texture->format, 0);
+		EXPECT_GT(dds_texture->sz, 0);
+		EXPECT_GE(dds_texture->mipmap_count, 0);
+	}
 	free(dds_texture);
 }
 
