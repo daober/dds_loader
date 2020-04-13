@@ -263,7 +263,7 @@ int fill_dds_info(FILE* p_file, DDS_TEXTURE** texture_in, const int size, const 
 		mip_picture_size = calculate_texture_size(mip_w, mip_h, channels, format);
 
 		dds_mip_tex->mipmaps = (DDS_TEXTURE*)malloc(sizeof(DDS_TEXTURE));
-		dds_mip_tex->pixels = (unsigned char*) malloc(sizeof(unsigned char) * mip_picture_size);
+		dds_mip_tex->mipmaps->pixels = (unsigned char*) malloc(sizeof(unsigned char) * mip_picture_size);
 
 		//fill with data
 		dds_mip_tex->mipmaps->channels = channels;

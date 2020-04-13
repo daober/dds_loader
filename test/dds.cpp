@@ -33,7 +33,7 @@ TEST(TestLoading, FileWithDepth) {
 	free(dds_texture);
 }
 
-/*TEST(TestLoading, FileMatches) {
+TEST(TestLoading, FileMatches) {
 	DDS_TEXTURE* dds_texture = (DDS_TEXTURE*)malloc(sizeof(DDS_TEXTURE));
 	int result = load_dds_from_file("../assets/Shopsign_Bakery_BaseColor.dds", &dds_texture);
 
@@ -70,9 +70,9 @@ TEST(TestLoading, MainStructureFilled) {
 		EXPECT_GE(dds_texture->mipmap_count, 0);
 	}
 	free(dds_texture);
-}*/
+}
 
-/*TEST(TestLoading, MipMappingStructureFilled) {
+TEST(TestLoading, MipMappingStructureFilled) {
 	DDS_TEXTURE* dds_texture = (DDS_TEXTURE*)malloc(sizeof(DDS_TEXTURE));
 	int result = load_dds_from_file("../assets/Shopsign_Bakery_BaseColor.dds", &dds_texture);
 
@@ -95,25 +95,24 @@ TEST(TestLoading, MainStructureFilled) {
 		EXPECT_EQ(dds_texture->mipmap_count, 1);
 	}
 	free(dds_texture);
-}*/
+}
 
-
-/*TEST(TestLoading, MipMappingStructureInnerMipFilled) {
+TEST(TestLoading, MipMappingStructureInnerMipFilled) {
 	DDS_TEXTURE* dds_texture = (DDS_TEXTURE*)malloc(sizeof(DDS_TEXTURE));
 	int result = load_dds_from_file("../assets/Shopsign_Bakery_BaseColor.dds", &dds_texture);
 
-	/*if(dds_texture->mipmap_count > 0){
+	if(dds_texture->mipmap_count > 0){
 		EXPECT_GT(dds_texture->mipmap_count, 0);
-		if (dds_texture->mipmaps) {
-			EXPECT_GT(dds_texture->mipmaps->width, 0);
-			EXPECT_GT(dds_texture->mipmaps->height, 0);
-			EXPECT_GT(dds_texture->mipmaps->channels, 0);
-			EXPECT_GT(dds_texture->mipmaps->sz, 0);
+		if (dds_texture->mipmaps->mipmaps) {
+			EXPECT_GT(dds_texture->mipmaps->mipmaps->width, 0);
+			EXPECT_GT(dds_texture->mipmaps->mipmaps->height, 0);
+			EXPECT_GT(dds_texture->mipmaps->mipmaps->channels, 0);
+			EXPECT_GT(dds_texture->mipmaps->mipmaps->sz, 0);
 		}
 	} else {
 		//just let it fail
 		EXPECT_GT(0, 1);
-	}*/
-/*	free(dds_texture);
-}*/
+	}
+	free(dds_texture);
+}
 
