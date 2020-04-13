@@ -257,7 +257,7 @@ int fill_dds_info(FILE* p_file, DDS_TEXTURE** texture_in, const int size, const 
 	DDS_TEXTURE* dds_mip_tex = (*texture_in);
 
 	//load all mipmaps
-	/*for (unsigned int i = 0; i < num_mipmap && (mip_w || mip_h); i++) {
+	for (unsigned int i = 0; i < num_mipmap && (mip_w || mip_h); i++) {
 
 		unsigned int mip_picture_size = 0;
 		mip_picture_size = calculate_texture_size(mip_w, mip_h, channels, format);
@@ -283,7 +283,7 @@ int fill_dds_info(FILE* p_file, DDS_TEXTURE** texture_in, const int size, const 
 		mip_w = mip_w >> 1;
 		mip_h = mip_h >> 1;
 		mip_d = mip_d >> 1 ? mip_d >> 1 : 1;
-	}*/
+	}
 
 	free(pixels);
 
