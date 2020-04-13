@@ -255,6 +255,7 @@ int fill_dds_info(FILE* p_file, DDS_TEXTURE** texture_in, const int size, const 
 	unsigned int offset = 0;
 
 	DDS_TEXTURE* dds_mip_tex = (*texture_in);
+
 	//load all mipmaps
 	for (unsigned int i = 0; i < num_mipmap && (mip_w || mip_h); i++) {
 
