@@ -1,4 +1,3 @@
-MIPMAP Loading Support -> done, but not tested
-Vulkan Texture Handling
+cubemap implementation
 implementation of texture flipping
-add tests
+Vulkan Texture Handling
