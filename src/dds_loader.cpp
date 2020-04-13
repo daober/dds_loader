@@ -75,6 +75,17 @@ int flip_texture(DDS_TEXTURE** texture_in)
 	return 0;
 }
 
+int calculate_texture_size(int width, int height, int channels, int format){
+	unsigned int picture_size = 0;
+	if (is_compressed_texture(format)) {
+		picture_size = ((width + 3) / 4) * ((height + 3) / 4) * (format == GL_COMPRESSED_RGBA_S3TC_DXT1_EXT ? 8 : 16);
+	} else {
+		picture_size = width * height * channels;
+	}
+	assert(picture_size != 0);
+	return picture_size;
+}
+
 
 int load_dds_from_file(char* filepath, DDS_TEXTURE** texture_in, const bool flip) {
 	//err = -1 -> file not found
@@ -209,11 +220,7 @@ int fill_dds_info(FILE* p_file, DDS_TEXTURE** texture_in, const int size, const 
 	height = ddsh->dwHeight;
 	depth = ddsh->dwDepth == 0 ? 1 : ddsh->dwDepth;
 
-	if (is_compressed_texture(format)) {
-		picture_size = ((width + 3) / 4) * ((height + 3) / 4) * (format == GL_COMPRESSED_RGBA_S3TC_DXT1_EXT ? 8 : 16);
-	} else {
-		picture_size = width * height * channels;
-	}
+	picture_size = calculate_texture_size(width, height, channels, format);
 
 	assert(picture_size != 0);
 
@@ -252,12 +259,7 @@ int fill_dds_info(FILE* p_file, DDS_TEXTURE** texture_in, const int size, const 
 	for (unsigned int i = 0; i < num_mipmap && (mip_w || mip_h); i++) {
 
 		unsigned int mip_picture_size = 0;
-		if (is_compressed_texture(format)) {
-			mip_picture_size = ((mip_w + 3) / 4) * ((mip_h + 3) / 4) * (format == GL_COMPRESSED_RGBA_S3TC_DXT1_EXT ? 8 : 16);
-		}
-		else {
-			mip_picture_size = mip_w * mip_h * channels;
-		}
+		mip_picture_size = calculate_texture_size(mip_w, mip_h, channels, format);
 
 		dds_mip_tex->mipmaps = (DDS_TEXTURE*)malloc(sizeof(DDS_TEXTURE));
 		dds_mip_tex->pixels = (unsigned char*) malloc(sizeof(unsigned char) * mip_picture_size);

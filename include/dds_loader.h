@@ -54,4 +54,6 @@ int is_compressed_texture(int format);
 
 int flip_texture(DDS_TEXTURE** texture_in);
 
+int calculate_texture_size(int width, int height, int channels, int format);
+
 #endif
