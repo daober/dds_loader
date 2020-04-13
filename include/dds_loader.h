@@ -41,9 +41,7 @@ typedef struct DDS_TEXTURE {
 	unsigned int			channels;
 	unsigned int			format;
 	unsigned int			mipmap_count;		//mipmap_count is index in mipmaps
-
 	struct DDS_TEXTURE*		mipmaps;
-
 	unsigned char*			pixels;
 } DDS_TEXTURE;
 

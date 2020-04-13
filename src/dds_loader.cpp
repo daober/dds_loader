@@ -247,6 +247,7 @@ int fill_dds_info(FILE* p_file, DDS_TEXTURE** texture_in, const int size, const 
 	
 	unsigned int offset = 0;
 
+	DDS_TEXTURE* dds_mip_tex = (*texture_in);
 	//load all mipmaps
 	for (unsigned int i = 0; i < num_mipmap && (mip_w || mip_h); i++) {
 
@@ -258,71 +259,27 @@ int fill_dds_info(FILE* p_file, DDS_TEXTURE** texture_in, const int size, const 
 			mip_picture_size = mip_w * mip_h * channels;
 		}
 
-		//allocate mipmap structure array
-		(*texture_in)->mipmaps = (DDS_TEXTURE*)malloc(sizeof(DDS_TEXTURE));
+		dds_mip_tex->mipmaps = (DDS_TEXTURE*)malloc(sizeof(DDS_TEXTURE));
+		dds_mip_tex->pixels = (unsigned char*) malloc(sizeof(unsigned char) * mip_picture_size);
 
-		if ((*texture_in)->mipmaps == NULL) {
-			return -5;
-		}
+		//fill with data
+		dds_mip_tex->mipmaps->channels = channels;
+		dds_mip_tex->mipmaps->sz = mip_picture_size;
+		dds_mip_tex->mipmaps->depth = mip_d;
+		dds_mip_tex->mipmaps->width = mip_w;
+		dds_mip_tex->mipmaps->height = mip_h;
+		dds_mip_tex->mipmaps->format = format;
+		dds_mip_tex->mipmaps->mipmap_count = i;
 
-		//DO NOT USE OR FILL!
-		(*texture_in)->mipmaps->mipmaps = NULL;
+		memset(dds_mip_tex->mipmaps->pixels, 0, sizeof(unsigned char) * mip_picture_size);
+		memcpy(dds_mip_tex->mipmaps->pixels, pixels, sizeof(unsigned char) * mip_picture_size);
 
-		//fill mipmap structure
-		memset(&(*texture_in)->mipmaps->channels, 0, sizeof(int));
-		memcpy(&(*texture_in)->mipmaps->channels, &channels, sizeof(int));
-
-		memset(&(*texture_in)->mipmaps->sz, 0, sizeof(unsigned int));
-		memcpy(&(*texture_in)->mipmaps->sz, &mip_picture_size, sizeof(unsigned int));
-
-		memset(&(*texture_in)->mipmaps->depth, 0, sizeof(unsigned int));
-		memcpy(&(*texture_in)->mipmaps->depth, &mip_d, sizeof(unsigned int));
-
-		memset(&(*texture_in)->mipmaps->width, 0, sizeof(unsigned int));
-		memcpy(&(*texture_in)->mipmaps->width, &mip_w, sizeof(unsigned int));
-
-		memset(&(*texture_in)->mipmaps->height, 0, sizeof(unsigned int));
-		memcpy(&(*texture_in)->mipmaps->height, &mip_h, sizeof(unsigned int));
-
-		memset(&(*texture_in)->mipmaps->format, 0, sizeof(unsigned int));
-		memcpy(&(*texture_in)->mipmaps->format, &format, sizeof(unsigned int));
-
-		memset(&(*texture_in)->mipmaps->mipmap_count, 0, sizeof(unsigned int));
-		memcpy(&(*texture_in)->mipmaps->mipmap_count, &i, sizeof(unsigned int));
-
-		(*texture_in)->mipmaps->pixels = (unsigned char*) malloc(sizeof(unsigned char) * mip_picture_size);
-
-		memset((*texture_in)->mipmaps->pixels, 0, sizeof(unsigned char) * mip_picture_size);
-		memcpy((*texture_in)->mipmaps->pixels, pixels, sizeof(unsigned char) * mip_picture_size);
-
-		/*
-		typedef struct DDS_TEXTURE {
-			unsigned int			width;
-			unsigned int			height;
-			unsigned int			depth;
-			unsigned int			sz;
-			unsigned int			channels;
-			unsigned int			format;
-			unsigned int			mipmap_count;		//mipmap_count is index in mipmaps
-
-			struct DDS_TEXTURE*		mipmaps;
-
-			unsigned char*			pixels;
-		} DDS_TEXTURE; */
-
-		//TODO: need to calculate the exact size to next mipmap block
-		(*texture_in)->mipmaps->pixels += mip_picture_size;
-		(*texture_in)->mipmaps += sizeof(DDS_TEXTURE);
-
+		//fill next mip map
+		dds_mip_tex = dds_mip_tex->mipmaps;
 		//shrink again
 		mip_w = mip_w >> 1;
 		mip_h = mip_h >> 1;
 		mip_d = mip_d >> 1 ? mip_d >> 1 : 1;
-
-		//fill the next inner mipmap structure
-		//offset += mip_picture_size;
-
-		offset += mip_picture_size;
 	}
 
 	free(pixels);
