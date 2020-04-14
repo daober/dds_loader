@@ -1,7 +1,6 @@
 #include "gtest/gtest.h"
 
 #include "dds_loader.h"
-#include <stdlib.h>
 
 
 
@@ -112,6 +111,20 @@ TEST(TestLoading, MipMappingStructureInnerMipFilled) {
 	} else {
 		//just let it fail
 		EXPECT_GT(0, 1);
+	}
+	free(dds_texture);
+}
+
+TEST(TestLoading, FlippedTexture) {
+	DDS_TEXTURE* dds_texture = (DDS_TEXTURE*)malloc(sizeof(DDS_TEXTURE));
+	int result = load_dds_from_file("../assets/Shopsign_Bakery_BaseColor.dds", &dds_texture);
+
+	if (dds_texture->pixels && dds_texture->sz) {
+		EXPECT_GT(dds_texture->sz, 0);
+
+		EXPECT_TRUE(dds_texture->pixels != NULL);
+		EXPECT_TRUE(dds_texture->pixels != nullptr);
+		EXPECT_TRUE(dds_texture->pixels != 0);
 	}
 	free(dds_texture);
 }
