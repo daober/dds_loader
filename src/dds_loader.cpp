@@ -71,15 +71,47 @@ int is_compressed_texture(int format) {
 	return ( format == GL_COMPRESSED_RGBA_S3TC_DXT1_EXT || (format == GL_COMPRESSED_RGBA_S3TC_DXT3_EXT) || (format == GL_COMPRESSED_RGBA_S3TC_DXT5_EXT) );
 }
 
-int flip_texture(DDS_TEXTURE** texture_in)
-{
+int flip_texture(unsigned char* pixels, int format, unsigned int width, unsigned int height, unsigned int depth, unsigned int size) {
 
+	int err = 0;
+	unsigned int linesize = 0;
+	unsigned int offset = 0;
 
+	if (is_compressed_texture(format)) {
+		assert(depth > 0);
 
+		unsigned int image_size = size / depth;
+		linesize = image_size / height;
 
+		unsigned char* tmp = (unsigned char*)malloc(sizeof(unsigned char) *  linesize);
 
-	return 0;
+		for (unsigned int i = 0; i < depth; i++) {
+
+			offset = image_size * i;
+			unsigned char* top; // = (unsigned char*)surface
+			unsigned char* bottom;
+
+			for (unsigned int j = 0; j < (height >> 1); j++) {
+				//swapping
+				memcpy(tmp, bottom, linesize);
+				memcpy(bottom, top, linesize);
+				memcpy(top, tmp, linesize);
+
+				top += linesize;
+				bottom -= linesize;
+			}
+		}
+		free(tmp);
+	}
+	else {
+		//not compressed
+		//TODO: currently only compressed textures are supported
+		err = -6;
+	}
+
+	return err;
 }
+
 
 int calculate_texture_size(int width, int height, int channels, int format){
 	unsigned int picture_size = 0;
@@ -231,8 +263,8 @@ int fill_dds_info(FILE* p_file, DDS_TEXTURE** texture_in, const int size, const 
 	assert(picture_size != 0);
 
 	unsigned char* pixels = (unsigned char*)malloc(sizeof( unsigned char ) * picture_size);
-	memset(pixels, 0, sizeof(unsigned char) * picture_size);
 
+	memset(pixels, 0, sizeof(unsigned char) * picture_size);
 	memcpy(pixels, buffer + 4 + sizeof(DDS_HEADER), sizeof(unsigned char) * picture_size);
 
 	//load all mipmaps
@@ -251,30 +283,11 @@ int fill_dds_info(FILE* p_file, DDS_TEXTURE** texture_in, const int size, const 
 	(*texture_in)->pixels = (unsigned char*)malloc(sizeof(unsigned char) * picture_size);
 
 	if (flip) {
-		//TODO: flip pixels
-		//store in temporary char array
-		unsigned char* temp_pixels = (unsigned char*)malloc(sizeof(unsigned char) * picture_size);
-
-		memset(temp_pixels, 0, sizeof(unsigned char) * picture_size);
-		memcpy(temp_pixels, pixels, sizeof(unsigned char) * picture_size);
-
-
-
-
-		//memset and memcpy to main storage
-		memset((*texture_in)->pixels, 0, sizeof(unsigned char)* picture_size);
-		memcpy((*texture_in)->pixels, temp_pixels, sizeof(unsigned char)* picture_size);
-
-		//free temporary char pixel array
-
-
-
-		free(temp_pixels);
+		flip_texture(pixels, format, width, height, depth, picture_size);
 	}
-	else {
-		memset((*texture_in)->pixels, 0, sizeof(unsigned char) * picture_size);
-		memcpy((*texture_in)->pixels, pixels, sizeof(unsigned char) * picture_size);
-	}
+
+	memset((*texture_in)->pixels, 0, sizeof(unsigned char) * picture_size);
+	memcpy((*texture_in)->pixels, pixels, sizeof(unsigned char) * picture_size);
 
 
 	//initial shrink of texture size (for mipmaps)
@@ -305,29 +318,11 @@ int fill_dds_info(FILE* p_file, DDS_TEXTURE** texture_in, const int size, const 
 		dds_mip_tex->mipmaps->mipmap_count = i;
 
 		if (flip) {
-			//TODO: flip pixels
-			//store in temporary char pixel array
-			unsigned char* temp_pixels = (unsigned char*)malloc(sizeof(unsigned char) * picture_size);
-
-			memset(temp_pixels, 0, sizeof(unsigned char) * picture_size);
-			memcpy(temp_pixels, pixels, sizeof(unsigned char) * picture_size);
-
-
-
-
-			//memset and memcpy to main storage
-			memset(dds_mip_tex->mipmaps->pixels, 0, sizeof(unsigned char)* mip_picture_size);
-			memcpy(dds_mip_tex->mipmaps->pixels, temp_pixels, sizeof(unsigned char)* mip_picture_size);
-
-			//free temporary char pixel array
-			free(temp_pixels);
-		}
-		else {
-			memset(dds_mip_tex->mipmaps->pixels, 0, sizeof(unsigned char) * mip_picture_size);
-			memcpy(dds_mip_tex->mipmaps->pixels, pixels, sizeof(unsigned char) * mip_picture_size);
+			flip_texture(pixels, format, width, height, depth, mip_picture_size);
 		}
 
-
+		memset(dds_mip_tex->mipmaps->pixels, 0, sizeof(unsigned char) * mip_picture_size);
+		memcpy(dds_mip_tex->mipmaps->pixels, pixels, sizeof(unsigned char) * mip_picture_size);
 
 		//fill next mip map
 		dds_mip_tex = dds_mip_tex->mipmaps;

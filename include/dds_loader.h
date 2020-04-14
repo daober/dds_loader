@@ -52,7 +52,7 @@ int fill_dds_info(FILE* p_file, DDS_TEXTURE** texture_in, const int size, const 
 
 int is_compressed_texture(int format);
 
-int flip_texture(DDS_TEXTURE** texture_in);
+int flip_texture(unsigned char* pixels, int format, unsigned int width, unsigned int height, unsigned int depth, unsigned int size);
 
 int calculate_texture_size(int width, int height, int channels, int format);
 
