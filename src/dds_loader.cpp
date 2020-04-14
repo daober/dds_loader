@@ -77,7 +77,7 @@ int flip_texture(unsigned char* pixels, int format, unsigned int width, unsigned
 	unsigned int linesize = 0;
 	unsigned int offset = 0;
 
-	if (is_compressed_texture(format)) {
+	if (!is_compressed_texture(format)) {
 		assert(depth > 0);
 
 		unsigned int image_size = size / depth;
@@ -104,7 +104,7 @@ int flip_texture(unsigned char* pixels, int format, unsigned int width, unsigned
 		free(tmp);
 	}
 	else {
-		//not compressed
+		//ATTENTION: compressed texture!!!
 		//TODO: currently only compressed textures are supported
 		err = -6;
 	}
@@ -283,7 +283,7 @@ int fill_dds_info(FILE* p_file, DDS_TEXTURE** texture_in, const int size, const 
 	(*texture_in)->pixels = (unsigned char*)malloc(sizeof(unsigned char) * picture_size);
 
 	if (flip) {
-		flip_texture(pixels, format, width, height, depth, picture_size);
+		err = flip_texture(pixels, format, width, height, depth, picture_size);
 	}
 
 	memset((*texture_in)->pixels, 0, sizeof(unsigned char) * picture_size);
@@ -318,7 +318,7 @@ int fill_dds_info(FILE* p_file, DDS_TEXTURE** texture_in, const int size, const 
 		dds_mip_tex->mipmaps->mipmap_count = i;
 
 		if (flip) {
-			flip_texture(pixels, format, width, height, depth, mip_picture_size);
+			err = flip_texture(pixels, format, width, height, depth, mip_picture_size);
 		}
 
 		memset(dds_mip_tex->mipmaps->pixels, 0, sizeof(unsigned char) * mip_picture_size);
