@@ -88,7 +88,7 @@ int flip_texture(unsigned char* pixels, int format, unsigned int width, unsigned
 		for (unsigned int i = 0; i < depth; i++) {
 
 			offset = image_size * i;
-			unsigned char* top = pixels + offset;
+			unsigned char* top = (unsigned char*)pixels + offset;
 			unsigned char* bottom = top + (image_size - linesize);
 
 			for (unsigned int j = 0; j < (height >> 1); j++) {
