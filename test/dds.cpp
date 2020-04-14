@@ -117,7 +117,7 @@ TEST(TestLoading, MipMappingStructureInnerMipFilled) {
 
 TEST(TestLoading, FlippedTexture) {
 	DDS_TEXTURE* dds_texture = (DDS_TEXTURE*)malloc(sizeof(DDS_TEXTURE));
-	int result = load_dds_from_file("../assets/Shopsign_Bakery_BaseColor.dds", &dds_texture);
+	int result = load_dds_from_file("../assets/Shopsign_Bakery_BaseColor.dds", &dds_texture, true);
 
 	if (dds_texture->pixels && dds_texture->sz) {
 		EXPECT_GT(dds_texture->sz, 0);
