@@ -9,6 +9,9 @@ https://docs.conan.io/en/latest/installation.html
 
 ### CMAKE
 
+For windows builds I highly recommend barbarian, a CLI which installs all needed dependencies and path out-of-the-box
+link: https://github.com/kwallner/Barbarian
+
 ## BUILDING
 
 ### BUILD INSTRUCTIONS
