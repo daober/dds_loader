@@ -128,9 +128,7 @@ int flip_texture(unsigned char* pixels, int format, unsigned int width, unsigned
 			err = -6;
 		}
 
-
 		linesize = x_blocks * block_size;
-
 
 		unsigned char* tmp = (unsigned char*)malloc(sizeof(unsigned char) * linesize);
 
@@ -147,8 +145,8 @@ int flip_texture(unsigned char* pixels, int format, unsigned int width, unsigned
 		free(tmp);
 
 		err = 0;
-
 	}
+
 	return err;
 }
 
