@@ -12,29 +12,39 @@ https://docs.conan.io/en/latest/installation.html
 ## BUILDING
 
 ### BUILD INSTRUCTIONS
+
+```bash
 conan create . user/channel
+```
+
 or for a in-source build:
+
+```bash
 mkdir build_dds_loader
+cd build_dds_loader
 conan install ../dds_loader user/channel
 conan build ../dds_loader
+```
 
 ### INTEGRATING IN YOUR PROJECT
 The include and library directory of this dds_loader will be installed in the conan package directory. 
 
 To find the package directory you can use the conan command (CLI):
-"conan info dds_loader/0.0.1@user/channel --paths"
+```bash
+conan info dds_loader/0.0.1@user/channel --paths
+```
 
 lib/ contains "dds_loader.lib"
 include/ contains the required header "dds_loader.h"
 
 NOTE: If you have used the in-source build method, the package folder will be directly created in your build folder, which is way more convenient
 
-### USAGE (OPENGL EXAMPLE)
-
-DDS_TEXTURE* sample_texture = new DDS_TEXTURE();
+### MINIMAL OPENGL USAGE EXAMPLE
 
 ```c
 ...
+
+DDS_TEXTURE* sample_texture = new DDS_TEXTURE();
 
 bool do_flip = true;
 load_dds_from_file("file/path/of/dds_file/sample.dds", &sample_texture, do_flip);
