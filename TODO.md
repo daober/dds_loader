@@ -1,3 +1,3 @@
-cubemap implementation
-implementation of texture flipping
-Vulkan Texture Handling
+# cubemap implementation
+# Vulkan Texture Handling (optional)
+# write a readme.md
