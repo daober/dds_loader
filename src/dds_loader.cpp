@@ -68,7 +68,7 @@ enum { TYPE_TEXTURE_NONE = -1, TYPE_TEXTURE_FLAT, TYPE_TEXTURE_3D, TYPE_TEXTURE_
 
 
 int is_compressed_texture(int format) {
-	return ( format == GL_COMPRESSED_RGBA_S3TC_DXT1_EXT || (format == GL_COMPRESSED_RGBA_S3TC_DXT3_EXT) || (format == GL_COMPRESSED_RGBA_S3TC_DXT5_EXT) );
+	return (format == GL_COMPRESSED_RGBA_S3TC_DXT1_EXT || (format == GL_COMPRESSED_RGBA_S3TC_DXT3_EXT) || (format == GL_COMPRESSED_RGBA_S3TC_DXT5_EXT));
 }
 
 int flip_texture(unsigned char* pixels, int format, unsigned int width, unsigned int height, unsigned int depth, unsigned int size) {
@@ -83,7 +83,7 @@ int flip_texture(unsigned char* pixels, int format, unsigned int width, unsigned
 		unsigned int image_size = size / depth;
 		linesize = image_size / height;
 
-		unsigned char* tmp = (unsigned char*)malloc(sizeof(unsigned char) *  linesize);
+		unsigned char* tmp = (unsigned char*)malloc(sizeof(unsigned char) * linesize);
 
 		for (unsigned int i = 0; i < depth; i++) {
 
@@ -105,10 +105,51 @@ int flip_texture(unsigned char* pixels, int format, unsigned int width, unsigned
 	}
 	else {
 		//ATTENTION: compressed texture!!!
-		//TODO: currently only compressed textures are supported
-		err = -6;
-	}
+		unsigned int x_blocks = width / 4;
+		unsigned int y_blocks = height / 4;
 
+		unsigned int block_size = 0;
+
+		unsigned char* top;
+		unsigned char* bottom;
+
+		switch (format) {
+		case GL_COMPRESSED_RGBA_S3TC_DXT1_EXT:
+			block_size = 8;
+			break;
+		case GL_COMPRESSED_RGBA_S3TC_DXT3_EXT:
+			block_size = 16;
+			break;
+		case GL_COMPRESSED_RGBA_S3TC_DXT5_EXT:
+			block_size = 16;
+			break;
+		default:
+			block_size = 0;
+			err = -6;
+		}
+
+
+		linesize = x_blocks * block_size;
+
+
+		unsigned char* tmp = (unsigned char*)malloc(sizeof(unsigned char) * linesize);
+
+		for (unsigned int i = 0; i < (y_blocks >> 1); i++){
+			top = pixels + i * linesize;
+			bottom = pixels + ((y_blocks - i) - 1) * linesize;
+		
+			//flip_blocks
+
+			memcpy(tmp, bottom, linesize);
+			memcpy(bottom, top, linesize);
+			memcpy(top, tmp, linesize);
+		}
+
+		free(tmp);
+
+		err = 0;
+
+	}
 	return err;
 }
 
