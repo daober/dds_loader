@@ -139,7 +139,6 @@ int flip_texture(unsigned char* pixels, int format, unsigned int width, unsigned
 			bottom = pixels + ((y_blocks - i) - 1) * linesize;
 		
 			//flip_blocks
-
 			memcpy(tmp, bottom, linesize);
 			memcpy(bottom, top, linesize);
 			memcpy(top, tmp, linesize);
