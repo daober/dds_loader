@@ -46,9 +46,9 @@ typedef struct DDS_TEXTURE {
 } DDS_TEXTURE;
 
 
-int load_dds_from_file(char* filepath, DDS_TEXTURE** texture_in, const bool flip = false);
+int load_dds_from_file(char* filepath, DDS_TEXTURE** texture_in, const int flip);
 
-int fill_dds_info(FILE* p_file, DDS_TEXTURE** texture_in, const int size, const bool flip = false);
+int fill_dds_info(FILE* p_file, DDS_TEXTURE** texture_in, const int size, const int flip);
 
 int is_compressed_texture(int format);
 

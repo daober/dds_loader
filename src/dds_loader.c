@@ -11,29 +11,29 @@
 #define DDSF_HEIGHT				0x00000002
 #define DDSF_WIDTH				0x00000004
 #define DDSF_PITCH				0x00000008
-#define DDSF_PIXELFORMAT		0x00001000
-#define DDSF_MIPMAPCOUNT		0x00020000
-#define DDSF_LINEARSIZE			0x00080000
+#define DDSF_PIXELFORMAT			0x00001000
+#define DDSF_MIPMAPCOUNT			0x00020000
+#define DDSF_LINEARSIZE				0x00080000
 #define DDSF_DEPTH				0x00800000
 
 // dwCaps1 flags
-#define DDSF_COMPLEX			0x00000008
-#define DDSF_TEXTURE			0x00001000
+#define DDSF_COMPLEX				0x00000008
+#define DDSF_TEXTURE				0x00001000
 #define DDSF_MIPMAP				0x00400000
 
 // dwCaps2 flags
-#define DDSF_CUBEMAP			0x00000200
-#define DDSF_CUBEMAP_POSITIVEX	0x00000400
-#define DDSF_CUBEMAP_NEGATIVEX	0x00000800
-#define DDSF_CUBEMAP_POSITIVEY	0x00001000
-#define DDSF_CUBEMAP_NEGATIVEY	0x00002000
-#define DDSF_CUBEMAP_POSITIVEZ	0x00004000
-#define DDSF_CUBEMAP_NEGATIVEZ	0x00008000
-#define DDSF_CUBEMAP_ALL_FACES	0x0000FC00
+#define DDSF_CUBEMAP				0x00000200
+#define DDSF_CUBEMAP_POSITIVEX			0x00000400
+#define DDSF_CUBEMAP_NEGATIVEX			0x00000800
+#define DDSF_CUBEMAP_POSITIVEY			0x00001000
+#define DDSF_CUBEMAP_NEGATIVEY			0x00002000
+#define DDSF_CUBEMAP_POSITIVEZ			0x00004000
+#define DDSF_CUBEMAP_NEGATIVEZ			0x00008000
+#define DDSF_CUBEMAP_ALL_FACES			0x0000FC00
 #define DDSF_VOLUME				0x00200000
 
 // pixel format flags
-#define DDSF_ALPHAPIXELS		0x00000001
+#define DDSF_ALPHAPIXELS			0x00000001
 #define DDSF_FOURCC				0x00000004
 #define DDSF_RGB				0x00000040
 #define DDSF_RGBA				0x00000041
@@ -43,17 +43,17 @@
 #define FOURCC_DXT3				0x33545844 //(MAKEFOURCC('D','X','T','3'))
 #define FOURCC_DXT5				0x35545844 //(MAKEFOURCC('D','X','T','5'))
 
-#define GL_BGR_EXT                                        0x80E0
-#define GL_COMPRESSED_RGB_S3TC_DXT1_EXT                   0x83F0
-#define GL_COMPRESSED_RGBA_S3TC_DXT1_EXT                  0x83F1
-#define GL_COMPRESSED_RGBA_S3TC_DXT3_EXT                  0x83F2
-#define GL_COMPRESSED_RGBA_S3TC_DXT5_EXT                  0x83F3
+#define GL_BGR_EXT                              0x80E0
+#define GL_COMPRESSED_RGB_S3TC_DXT1_EXT         0x83F0
+#define GL_COMPRESSED_RGBA_S3TC_DXT1_EXT        0x83F1
+#define GL_COMPRESSED_RGBA_S3TC_DXT3_EXT        0x83F2
+#define GL_COMPRESSED_RGBA_S3TC_DXT5_EXT        0x83F3
 
-#define GL_RGB                            0x1907
-#define GL_RGBA                           0x1908
-#define GL_LUMINANCE                      0x1909
-#define GL_BGR_EXT                        0x80E0
-#define GL_BGRA_EXT                       0x80E1
+#define GL_RGB                            	0x1907
+#define GL_RGBA                           	0x1908
+#define GL_LUMINANCE                      	0x1909
+#define GL_BGR_EXT                        	0x80E0
+#define GL_BGRA_EXT                       	0x80E1
 
 
 /*======================================================================*/
@@ -163,7 +163,7 @@ int calculate_texture_size(int width, int height, int channels, int format){
 }
 
 
-int load_dds_from_file(char* filepath, DDS_TEXTURE** texture_in, const bool flip) {
+int load_dds_from_file(char* filepath, DDS_TEXTURE** texture_in, const int flip) {
 	//err = -1 -> file not found
 	//err = -2 -> size of file is 0
 	int err = 0x0000;
@@ -194,7 +194,7 @@ int load_dds_from_file(char* filepath, DDS_TEXTURE** texture_in, const bool flip
 }
 
 
-int fill_dds_info(FILE* p_file, DDS_TEXTURE** texture_in, const int size, const bool flip) {
+int fill_dds_info(FILE* p_file, DDS_TEXTURE** texture_in, const int size, const int flip) {
 
 	int err = 0;
 	char* buffer = (char*)malloc(sizeof(char)*size);
