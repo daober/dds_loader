@@ -5,7 +5,7 @@
 TEST(TestFilePath, TestInvalidFilePath) {
 	const int do_flip = 0;
 	DDS_TEXTURE* dds_texture = (DDS_TEXTURE*)malloc(sizeof(DDS_TEXTURE));
-	int result = load_dds_from_file("../assets/invalid_path.dds", &dds_texture, do_flip);
+	int result = load_dds_from_file((char*)"../assets/invalid_path.dds", &dds_texture, do_flip);
 
 	EXPECT_EQ(result, -1);
 
@@ -15,7 +15,7 @@ TEST(TestFilePath, TestInvalidFilePath) {
 TEST(TestFilePath, TestSizeIsNull) {
 	const int do_flip = 0;
 	DDS_TEXTURE* dds_texture = (DDS_TEXTURE*)malloc(sizeof(DDS_TEXTURE));
-	int result = load_dds_from_file("../assets/zero_size.dds", &dds_texture, do_flip);
+	int result = load_dds_from_file((char*)"../assets/zero_size.dds", &dds_texture, do_flip);
 
 	EXPECT_EQ(result, -2);
 
@@ -26,7 +26,7 @@ TEST(TestFilePath, TestSizeIsNull) {
 TEST(TestLoading, FileWithDepth) {
 	const int do_flip = 0;
 	DDS_TEXTURE* dds_texture = (DDS_TEXTURE*)malloc(sizeof(DDS_TEXTURE));
-	int result = load_dds_from_file("../assets/MASTER_Room_Interior_BaseColor.dds", &dds_texture, do_flip);
+	int result = load_dds_from_file((char*)"../assets/MASTER_Room_Interior_BaseColor.dds", &dds_texture, do_flip);
 
 	EXPECT_EQ(result, 0);
 
@@ -36,7 +36,7 @@ TEST(TestLoading, FileWithDepth) {
 TEST(TestLoading, FileMatches) {
 	const int do_flip = 0;
 	DDS_TEXTURE* dds_texture = (DDS_TEXTURE*)malloc(sizeof(DDS_TEXTURE));
-	int result = load_dds_from_file("../assets/Shopsign_Bakery_BaseColor.dds", &dds_texture, do_flip);
+	int result = load_dds_from_file((char*)"../assets/Shopsign_Bakery_BaseColor.dds", &dds_texture, do_flip);
 
 	EXPECT_EQ(result, 0);
 
@@ -46,7 +46,7 @@ TEST(TestLoading, FileMatches) {
 TEST(TestLoading, MainPixelsFilled) {
 	const int do_flip = 0;
 	DDS_TEXTURE* dds_texture = (DDS_TEXTURE*)malloc(sizeof(DDS_TEXTURE));
-	int result = load_dds_from_file("../assets/Shopsign_Bakery_BaseColor.dds", &dds_texture, do_flip);
+	int result = load_dds_from_file((char*)"../assets/Shopsign_Bakery_BaseColor.dds", &dds_texture, do_flip);
 
 	if(dds_texture->pixels && dds_texture->sz){
 		EXPECT_GT(dds_texture->sz, 0);
@@ -61,7 +61,7 @@ TEST(TestLoading, MainPixelsFilled) {
 TEST(TestLoading, MainStructureFilled) {
 	const int do_flip = 0;
 	DDS_TEXTURE* dds_texture = (DDS_TEXTURE*)malloc(sizeof(DDS_TEXTURE));
-	int result = load_dds_from_file("../assets/Shopsign_Bakery_BaseColor.dds", &dds_texture, do_flip);
+	int result = load_dds_from_file((char*)"../assets/Shopsign_Bakery_BaseColor.dds", &dds_texture, do_flip);
 
 	if(dds_texture->pixels && dds_texture->sz){
 		EXPECT_GT(dds_texture->width, 0);
@@ -78,7 +78,7 @@ TEST(TestLoading, MainStructureFilled) {
 TEST(TestLoading, MipMappingStructureFilled) {
 	const int do_flip = 0;
 	DDS_TEXTURE* dds_texture = (DDS_TEXTURE*)malloc(sizeof(DDS_TEXTURE));
-	int result = load_dds_from_file("../assets/Shopsign_Bakery_BaseColor.dds", &dds_texture, do_flip);
+	int result = load_dds_from_file((char*)"../assets/Shopsign_Bakery_BaseColor.dds", &dds_texture, do_flip);
 
 	if(dds_texture->mipmap_count > 0){
 		EXPECT_GT(dds_texture->mipmap_count, 0);
@@ -104,7 +104,7 @@ TEST(TestLoading, MipMappingStructureFilled) {
 TEST(TestLoading, MipMappingStructureInnerMipFilled) {
 	const int do_flip = 0;
 	DDS_TEXTURE* dds_texture = (DDS_TEXTURE*)malloc(sizeof(DDS_TEXTURE));
-	int result = load_dds_from_file("../assets/Shopsign_Bakery_BaseColor.dds", &dds_texture, do_flip);
+	int result = load_dds_from_file((char*)"../assets/Shopsign_Bakery_BaseColor.dds", &dds_texture, do_flip);
 
 	if(dds_texture->mipmap_count > 0){
 		EXPECT_GT(dds_texture->mipmap_count, 0);
@@ -124,7 +124,7 @@ TEST(TestLoading, MipMappingStructureInnerMipFilled) {
 TEST(TestLoading, FlippedTexture) {
 	const int do_flip = 1;
 	DDS_TEXTURE* dds_texture = (DDS_TEXTURE*)malloc(sizeof(DDS_TEXTURE));
-	int result = load_dds_from_file("../assets/Shopsign_Bakery_BaseColor.dds", &dds_texture, do_flip);
+	int result = load_dds_from_file((char*)"../assets/Shopsign_Bakery_BaseColor.dds", &dds_texture, do_flip);
 
 	EXPECT_EQ(result, 0);
 

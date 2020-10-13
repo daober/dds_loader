@@ -5,8 +5,9 @@ configure_package_config_file(LibraryConfig.cmake.in ${CMAKE_CURRENT_BINARY_DIR}
     )
     
 install(
-    EXPORT Targets
+    EXPORT dds_loader-targets
     FILE ${PROJECT_NAME}Targets.cmake
+    NAMESPACE dds::
     DESTINATION cmake
     )
     
