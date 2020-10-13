@@ -20,7 +20,6 @@ project(dds_loader)
 #enable_testing()
 #GTEST SPECIFIC END
 
-#add_subdirectory(test)
 add_subdirectory(exports)
 
 ##
@@ -31,22 +30,23 @@ MESSAGE("BUILDING " ${PROJECT_NAME})
 SET(HEADER ${PROJECT_SOURCE_DIR}/include/dds_loader.h)
 SET(SRC ${PROJECT_SOURCE_DIR}/src/dds_loader.c)
 
-add_library(dds SHARED ${SRC})
-add_library(dds::loader ALIAS dds)
+add_library(${PROJECT_NAME} SHARED ${SRC})
+#set an alias
+add_library(dds::loader ALIAS ${PROJECT_NAME})
 
-target_include_directories(dds PRIVATE
+target_include_directories(${PROJECT_NAME} PRIVATE
                         src
                         PUBLIC
 	                $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include> 
                         $<INSTALL_INTERFACE:include> 
 )
 
-install(DIRECTORY include DESTINATION .)
-
-install(TARGETS dds     
+install(TARGETS ${PROJECT_NAME}     
 	EXPORT Targets 
         LIBRARY DESTINATION lib
         ARCHIVE DESTINATION lib
         RUNTIME DESTINATION bin
+	INCLUDES DESTINATION include
         )
 
+install(FILES include/dds_loader.h DESTINATION include)
